@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hover Glow Royal Mirror</title>
+    <style>
+        :root {
+            --gold-frame: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fcf6ba, #aa771c);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #000;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Times New Roman', serif;
+        }
+
+        canvas#dustCanvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .neon-text {
+            width: 100%;
+            text-align: center;
+            font-size: clamp(2.2rem, 9vw, 4rem);
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 15px;
+            z-index: 5;
+            transition: 0.8s ease;
+            filter: drop-shadow(0 0 2px #fff);
+            opacity: 0.3;
+        }
+
+        .dark-mode .neon-text {
+            filter: drop-shadow(0 0 15px #fff) drop-shadow(0 0 30px #d4af37);
+            opacity: 1;
+        }
+
+        .mirror-container {
+            position: relative;
+            width: 400px; 
+            height: 500px; 
+            padding: 15px;
+            background: var(--gold-frame);
+            z-index: 10;
+            border-radius: 50%; 
+            box-shadow: 0 0 70px rgba(0,0,0,0.9);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .glass {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+            border-radius: 50%;
+            border: 3px solid #111;
+        }
+
+        video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+
+        .ring-glow {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 0px solid white;
+            z-index: 20;
+            transition: 0.7s ease-in-out;
+            pointer-events: none;
+        }
+
+        .dark-mode .ring-glow {
+            border-width: 25px;
+            box-shadow: 0 0 60px #fff, inset 0 0 35px #fff;
+        }
+
+        /* Responsive Hover Button */
+        .mini-btn {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 42px; 
+            height: 42px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Normal Glow in Dark */
+        .dark-mode .mini-btn {
+            border-color: #fff;
+            filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 15px #d4af37);
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Extra Intense Light on Hover */
+        .mini-btn:hover {
+            transform: translateX(-50%) scale(1.2); /* Size barh jayega */
+            filter: drop-shadow(0 0 20px #fff) drop-shadow(0 0 35px #d4af37); /* Light taiz ho jayegi */
+            background: rgba(255,255,255,0.4);
+            border: 2px solid #fff;
+        }
+
+        .mini-btn:active { transform: translateX(-50%) scale(0.85); background: #fff; }
+
+        canvas#capture { display: none; }
+    </style>
+</head>
+<body id="main">
+
+    <canvas id="dustCanvas"></canvas>
+
+    <div class="neon-text">I LOVE YOU</div>
+
+    <div class="mirror-container">
+        <div class="glass">
+            <div class="ring-glow"></div>
+            <video id="v" autoplay playsinline></video>
+        </div>
+        <button class="mini-btn" onclick="snap()"></button>
+    </div>
+
+    <div class="neon-text">I MISS YOU</div>
+
+    <canvas id="capture"></canvas>
+    <canvas id="sensor" style="display:none;"></canvas>
+
+    <script>
+        const v = document.getElementById('v'), b = document.getElementById('main');
+        const dC = document.getElementById('dustCanvas'), ctxD = dC.getContext('2d');
+        let parts = [];
+
+        function initDust() {
+            dC.width = window.innerWidth;
+            dC.height = window.innerHeight;
+            for(let i=0; i<850; i++) { 
+                parts.push({
+                    x: Math.random() * dC.width,
+                    y: Math.random() * dC.height,
+                    s: Math.random() * 2.5 + 0.5,
+                    sp: Math.random() * 1.5 + 0.5,
+                    o: Math.random(),
+                    d: Math.random() * 1 - 0.5
+                });
+            }
+        }
+
+        function drawDust() {
+            ctxD.clearRect(0, 0, dC.width, dC.height);
+            parts.forEach(p => {
+                ctxD.fillStyle = `rgba(252, 246, 186, ${p.o})`;
+                ctxD.beginPath();
+                ctxD.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+                ctxD.fill();
+                p.y -= p.sp;
+                p.x += p.d;
+                if(p.y < -10) { p.y = dC.height + 10; p.x = Math.random() * dC.width; }
+            });
+            requestAnimationFrame(drawDust);
+        }
+
+        async function start() {
+            initDust(); drawDust();
+            try {
+                const s = await navigator.mediaDevices.getUserMedia({ video: true });
+                v.srcObject = s;
+                setInterval(checkLight, 500);
+            } catch (e) { alert("Camera Access Required"); }
+        }
+
+        function checkLight() {
+            if (!v.videoWidth) return;
+            const sn = document.getElementById('sensor');
+            const sCtx = sn.getContext('2d');
+            sn.width = 10; sn.height = 10;
+            sCtx.drawImage(v, 0, 0, 10, 10);
+            const data = sCtx.getImageData(0, 0, 10, 10).data;
+            let lux = 0;
+            for (let i = 0; i < data.length; i += 4) lux += (data[i] + data[i+1] + data[i+2]) / 3;
+            if ((lux / 25) < 36) b.classList.add('dark-mode');
+            else b.classList.remove('dark-mode');
+        }
+
+        function snap() {
+            const cap = document.getElementById('capture');
+            const ctx = cap.getContext('2d');
+            cap.width = v.videoWidth; cap.height = v.videoHeight;
+            ctx.translate(cap.width, 0); ctx.scale(-1, 1);
+            ctx.drawImage(v, 0, 0);
+            const l = document.createElement('a');
+            l.download = `Hover_Snap_${Date.now()}.png`;
+            l.href = cap.toDataURL();
+            l.click();
+        }
+
+        window.onload = start;
+        window.onresize = () => { dC.width = window.innerWidth; dC.height = window.innerHeight; };
+    </script>
+</body>
+</html>
