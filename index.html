@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hover Glow Royal Mirror</title>
+    <title>Ultra Dust Mirror</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --gold-frame: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fcf6ba, #aa771c);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
             background: #000;
@@ -19,9 +21,10 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            font-family: 'Times New Roman', serif;
+            font-family: 'Cormorant Garamond', serif;
         }
 
+        /* Extreme Dust Canvas */
         canvas#dustCanvas {
             position: absolute;
             top: 0; left: 0;
@@ -31,33 +34,42 @@
         }
 
         .neon-text {
-            width: 100%;
+            width: 90%;
             text-align: center;
-            font-size: clamp(2.2rem, 9vw, 4rem);
-            font-weight: 900;
-            color: #fff;
-            letter-spacing: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #d4af37;
+            letter-spacing: 4px;
             z-index: 5;
             transition: 0.8s ease;
-            filter: drop-shadow(0 0 2px #fff);
-            opacity: 0.3;
+            opacity: 0.8;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
         }
 
         .dark-mode .neon-text {
-            filter: drop-shadow(0 0 15px #fff) drop-shadow(0 0 30px #d4af37);
+            filter: drop-shadow(0 0 12px #fff);
             opacity: 1;
+            color: #fff;
+        }
+
+        .sub-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            margin-top: 10px;
         }
 
         .mirror-container {
             position: relative;
-            width: 400px; 
-            height: 500px; 
-            padding: 15px;
+            width: 85vw;
+            max-width: 380px; 
+            aspect-ratio: 4 / 5.5;
+            padding: 10px;
             background: var(--gold-frame);
             z-index: 10;
             border-radius: 50%; 
-            box-shadow: 0 0 70px rgba(0,0,0,0.9);
-            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+            margin: 20px 0;
         }
 
         .glass {
@@ -67,7 +79,7 @@
             position: relative;
             overflow: hidden;
             border-radius: 50%;
-            border: 3px solid #111;
+            border: 2px solid #111;
         }
 
         video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
@@ -78,48 +90,36 @@
             border-radius: 50%;
             border: 0px solid white;
             z-index: 20;
-            transition: 0.7s ease-in-out;
+            transition: 0.5s ease;
             pointer-events: none;
         }
 
         .dark-mode .ring-glow {
-            border-width: 25px;
-            box-shadow: 0 0 60px #fff, inset 0 0 35px #fff;
+            border-width: 15px;
+            box-shadow: 0 0 40px #fff, inset 0 0 20px #fff;
         }
 
-        /* Responsive Hover Button */
         .mini-btn {
             position: absolute;
-            bottom: 40px;
+            bottom: 12%;
             left: 50%;
             transform: translateX(-50%);
-            width: 42px; 
-            height: 42px;
+            width: 48px; 
+            height: 48px;
             border-radius: 50%;
-            border: 1.5px solid rgba(255,255,255,0.5);
+            border: 1.5px solid rgba(255,255,255,0.7);
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(8px);
             cursor: pointer;
             z-index: 100;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s ease;
         }
 
-        /* Normal Glow in Dark */
-        .dark-mode .mini-btn {
-            border-color: #fff;
-            filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 15px #d4af37);
-            background: rgba(255,255,255,0.2);
-        }
-
-        /* Extra Intense Light on Hover */
-        .mini-btn:hover {
-            transform: translateX(-50%) scale(1.2); /* Size barh jayega */
-            filter: drop-shadow(0 0 20px #fff) drop-shadow(0 0 35px #d4af37); /* Light taiz ho jayegi */
+        .mini-btn:hover, .mini-btn:active {
+            transform: translateX(-50%) scale(1.15);
+            filter: drop-shadow(0 0 20px #fff) drop-shadow(0 0 30px #d4af37);
             background: rgba(255,255,255,0.4);
-            border: 2px solid #fff;
         }
-
-        .mini-btn:active { transform: translateX(-50%) scale(0.85); background: #fff; }
 
         canvas#capture { display: none; }
     </style>
@@ -128,7 +128,7 @@
 
     <canvas id="dustCanvas"></canvas>
 
-    <div class="neon-text">I LOVE YOU</div>
+    <div class="neon-text">YOU ARE BEAUTIFUL</div>
 
     <div class="mirror-container">
         <div class="glass">
@@ -138,7 +138,7 @@
         <button class="mini-btn" onclick="snap()"></button>
     </div>
 
-    <div class="neon-text">I MISS YOU</div>
+    <div class="neon-text sub-text">See yourself in this mirror</div>
 
     <canvas id="capture"></canvas>
     <canvas id="sensor" style="display:none;"></canvas>
@@ -151,14 +151,16 @@
         function initDust() {
             dC.width = window.innerWidth;
             dC.height = window.innerHeight;
-            for(let i=0; i<850; i++) { 
+            parts = [];
+            // Extreme Density: 2000 particles
+            for(let i=0; i<2000; i++) {
                 parts.push({
                     x: Math.random() * dC.width,
                     y: Math.random() * dC.height,
-                    s: Math.random() * 2.5 + 0.5,
-                    sp: Math.random() * 1.5 + 0.5,
+                    s: Math.random() * 1.8 + 0.3, // Size range
+                    sp: Math.random() * 0.5 + 0.2, // Slow magical speed
                     o: Math.random(),
-                    d: Math.random() * 1 - 0.5
+                    d: Math.random() * 0.6 - 0.3 // Slight horizontal drift
                 });
             }
         }
@@ -167,12 +169,17 @@
             ctxD.clearRect(0, 0, dC.width, dC.height);
             parts.forEach(p => {
                 ctxD.fillStyle = `rgba(252, 246, 186, ${p.o})`;
-                ctxD.beginPath();
-                ctxD.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+                ctxD.beginPath(); 
+                ctxD.arc(p.x, p.y, p.s, 0, Math.PI * 2); 
                 ctxD.fill();
+                
                 p.y -= p.sp;
                 p.x += p.d;
-                if(p.y < -10) { p.y = dC.height + 10; p.x = Math.random() * dC.width; }
+                
+                // Wrap around logic
+                if(p.y < -10) p.y = dC.height + 10;
+                if(p.x < -10) p.x = dC.width + 10;
+                if(p.x > dC.width + 10) p.x = -10;
             });
             requestAnimationFrame(drawDust);
         }
@@ -180,10 +187,12 @@
         async function start() {
             initDust(); drawDust();
             try {
-                const s = await navigator.mediaDevices.getUserMedia({ video: true });
+                const s = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "user" } 
+                });
                 v.srcObject = s;
-                setInterval(checkLight, 500);
-            } catch (e) { alert("Camera Access Required"); }
+                setInterval(checkLight, 800);
+            } catch (e) { alert("Camera access needed."); }
         }
 
         function checkLight() {
@@ -195,7 +204,7 @@
             const data = sCtx.getImageData(0, 0, 10, 10).data;
             let lux = 0;
             for (let i = 0; i < data.length; i += 4) lux += (data[i] + data[i+1] + data[i+2]) / 3;
-            if ((lux / 25) < 36) b.classList.add('dark-mode');
+            if ((lux / 25) < 32) b.classList.add('dark-mode');
             else b.classList.remove('dark-mode');
         }
 
@@ -205,14 +214,14 @@
             cap.width = v.videoWidth; cap.height = v.videoHeight;
             ctx.translate(cap.width, 0); ctx.scale(-1, 1);
             ctx.drawImage(v, 0, 0);
-            const l = document.createElement('a');
-            l.download = `Hover_Snap_${Date.now()}.png`;
-            l.href = cap.toDataURL();
-            l.click();
+            const link = document.createElement('a');
+            link.download = `Golden_Dust_Snap.png`;
+            link.href = cap.toDataURL('image/png');
+            link.click();
         }
 
         window.onload = start;
-        window.onresize = () => { dC.width = window.innerWidth; dC.height = window.innerHeight; };
+        window.onresize = initDust;
     </script>
 </body>
 </html>
